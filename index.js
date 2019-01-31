@@ -1,35 +1,31 @@
 const Discord = require('discord.js');
 const { prefix, token } = require('./config.json');
+const { getCommandFromMessage } = require('./utils/MessageHelpers');
+const { getLatestNews } = require('./modules/News');
 
 const client = new Discord.Client();
 
-// function getMember(name, msg) {
-//   const guildMember = msg.guild.members.filter(
-//     m => m.user.username.toLowerCase() === name.toLowerCase(),
-//   );
-//   const member = guildMember.values().next().value;
-//   return member;
-// }
-
-const handleMessage = (msg) => {
-  const { author, content, channel } = msg;
+const handleMessage = async (msg) => {
+  const { content, channel } = msg;
 
   if (!msg.guild) return;
 
   if (!content.startsWith(prefix)) return; // Not a message for our BOT, ignore it
 
-  console.log(msg);
-  console.log(author);
-  console.log(channel);
+  if (channel.name !== 'webhooks-test') return; // Only looks at messages inside webhooks-test channel
+
+  const command = getCommandFromMessage(msg);
+
+  if (command === 'latest-news') {
+    const link = await getLatestNews();
+    msg.channel.send(link);
+  }
 };
 
 const handleReady = () => {
   console.log(`Logged in as ${client.user.tag}!`);
   // Set the client user's presence
-  client.user
-    .setPresence({ game: { name: `${prefix}help` }, status: 'idle' })
-    .then(console.log)
-    .catch(console.error);
+  client.user.setPresence({ game: { name: `${prefix}help` }, status: 'idle' }).catch(console.error);
 };
 
 client.on('ready', handleReady);
@@ -39,5 +35,5 @@ client.login(token);
 
 process.on('SIGINT', () => {
   console.log('Logging out...');
-  client.destroy();
+  client.destroy(); // Logout when the process is stopped
 });
