@@ -36,3 +36,8 @@ client.on('ready', handleReady);
 client.on('message', handleMessage);
 
 client.login(token);
+
+process.on('SIGINT', () => {
+  console.log('Logging out...');
+  client.destroy();
+});
