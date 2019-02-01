@@ -9,6 +9,20 @@ Native compiler for JavaScript files.
 Package Manager for JavaScript. Lets you install libraries and external packages.
 NPM can also be used, but yarn is much more polished and has less bugs and errors.
 
+### [ESLint](https://eslint.org/docs/user-guide/integrations)
+
+Add eslint to your favorite editor, to be able to see real time problems with the code you write.
+
+### [DiscordJS](https://discord.js.org/#/docs/main/stable/general/welcome)
+
+This is the module we use to communicate with the discord API. The link leads to their documentation.
+
+## Initial setup
+   - ``` git clone git@github.com:NickPelov/SSY-Bot.git -FOLDER-NAME- ``` 
+   - Create your config file
+   - ``` yarn ```
+   - ``` yarn start ```
+
 ## Available Scripts
 
 In the project directory, you can run:

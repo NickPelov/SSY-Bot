@@ -1,7 +1,8 @@
 const Discord = require('discord.js');
 const { prefix, token } = require('./config.json');
-const { getCommandFromMessage } = require('./utils/MessageHelpers');
+const { getCommandFromMessage } = require('./modules/Utils');
 const { getLatestNews } = require('./modules/News');
+const { showGMMessage } = require('./modules/FunFunctions');
 
 const client = new Discord.Client();
 
@@ -19,6 +20,8 @@ const handleMessage = async (msg) => {
   if (command === 'latest-news') {
     const link = await getLatestNews();
     msg.channel.send(link);
+  } else if (command === 'awesome' || command === 'lame') {
+    showGMMessage(msg, command);
   }
 };
 
