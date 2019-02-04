@@ -26,7 +26,6 @@ const handleMessage = async (msg) => {
   } else if (command === 'awesome' || command === 'lame') {
     showGMMessage(msg, command);
   } else if (command === 'lookup') {
-    console.log(args);
     const info = await getPlayerInfo(args[0]);
     msg.channel.send(info);
   } else if (command === 'token') {

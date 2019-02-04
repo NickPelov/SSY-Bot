@@ -25,7 +25,7 @@ async function getBnetAccessToken() {
     const result = await oauth2.clientCredentials.getToken({});
     accessToken = oauth2.accessToken.create(result);
   } catch (error) {
-    console.log('Access Token error', error.message);
+    console.error('Access Token error', error.message);
   }
 }
 
@@ -50,7 +50,7 @@ async function checkTokenStatus() {
     try {
       accessToken = await accessToken.refresh();
     } catch (error) {
-      console.log('Error refreshing access token: ', error.message);
+      console.error('Error refreshing access token: ', error.message);
     }
   }
 }
@@ -86,7 +86,6 @@ function getPlayerInfo(player) {
   const character = player.substring(0, player.indexOf('-'));
 
   return getResource(`/wow/character/${realm}/${character}`, (data) => {
-    console.log(data);
     if (data === 404) {
       return 'Could not find character.';
     }
@@ -110,7 +109,6 @@ function getPlayerInfo(player) {
 function getRealmStatus(realm) {
   return getResource('/wow/realm/status', (data) => {
     const result = data.realms.find(r => r.name.toLowerCase() === realm.toLowerCase());
-    console.log(result);
     let status;
     let color;
     if (result.status) {
