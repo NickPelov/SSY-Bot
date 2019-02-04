@@ -3,6 +3,9 @@ const { prefix, token } = require('./config.json');
 const { getCommandFromMessage } = require('./modules/Utils');
 const { getLatestNews } = require('./modules/News');
 const { showGMMessage } = require('./modules/FunFunctions');
+const {
+  getTokenPrice, getPlayerInfo, getRealmStatus, getBnetAccessToken,
+} = require('./modules/Bnet');
 
 const client = new Discord.Client();
 
@@ -15,13 +18,27 @@ const handleMessage = async (msg) => {
 
   if (channel.name !== 'webhooks-test') return; // Only looks at messages inside webhooks-test channel
 
-  const command = getCommandFromMessage(msg);
+  const { command, args } = getCommandFromMessage(msg);
 
   if (command === 'latest-news') {
     const link = await getLatestNews();
     msg.channel.send(link);
   } else if (command === 'awesome' || command === 'lame') {
     showGMMessage(msg, command);
+  } else if (command === 'lookup') {
+    console.log(args);
+    const info = await getPlayerInfo(args[0]);
+    msg.channel.send(info);
+  } else if (command === 'token') {
+    const price = await getTokenPrice();
+    msg.channel.send(price);
+  } else if (command === 'realm') {
+    if (args[0]) {
+      const status = await getRealmStatus(args[0]);
+      msg.channel.send(status);
+    } else {
+      msg.channel.send('Please provide a realm name: /realm Sylvanas');
+    }
   }
 };
 
@@ -29,6 +46,8 @@ const handleReady = () => {
   console.log(`Logged in as ${client.user.tag}!`);
   // Set the client user's presence
   client.user.setPresence({ game: { name: `${prefix}help` }, status: 'idle' }).catch(console.error);
+  getBnetAccessToken();
+  console.log('Successfully connected to Battle.net API');
 };
 
 client.on('ready', handleReady);

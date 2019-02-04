@@ -1,0 +1,136 @@
+const fetch = require('node-fetch');
+const { RichEmbed } = require('discord.js');
+const { bnetSecret, bnetClientID } = require('../config.json');
+const { classes } = require('../assets/classes.json');
+const { races } = require('../assets/races.json');
+
+// Set the configuration settings
+const credentials = {
+  client: {
+    id: bnetClientID,
+    secret: bnetSecret,
+  },
+  auth: {
+    tokenHost: 'https://eu.battle.net/',
+  },
+};
+
+// Initialize the OAuth2 Library
+const oauth2 = require('simple-oauth2').create(credentials);
+
+let accessToken;
+
+async function getBnetAccessToken() {
+  try {
+    const result = await oauth2.clientCredentials.getToken({});
+    accessToken = oauth2.accessToken.create(result);
+  } catch (error) {
+    console.log('Access Token error', error.message);
+  }
+}
+
+/*
+    Used to create the URLs for you. Simply pass in the end point you want to GET.
+    Examples:
+        /data/wow/token/index
+        /data/wow/region/{regionId}
+        /data/wow/power-type/{powerTypeId}
+        /data/wow/mythic-keystone/index
+*/
+function constructURL(endPoint) {
+  return `https://eu.api.blizzard.com${endPoint}?namespace=dynamic-eu&locale=en_GB&access_token=${accessToken.token.access_token}`;
+}
+
+/*
+  Checks if the current token is expired. If the token has expired it refreshes the token.
+  Call this at the start of every function here. To guarantee you never try to use an old token.
+*/
+async function checkTokenStatus() {
+  if (accessToken.expired()) {
+    try {
+      accessToken = await accessToken.refresh();
+    } catch (error) {
+      console.log('Error refreshing access token: ', error.message);
+    }
+  }
+}
+
+function getResource(url, callback) {
+  return fetch(constructURL(url))
+    .then((response) => {
+      if (response.status !== 200) {
+        console.error(`Looks like there was a problem. Status Code: ${response.status} & ${response.statusText}`);
+        return response.status;
+      }
+      return response.json();
+    })
+    .then(data => callback(data))
+    .catch((err) => {
+      console.error('Fetch Error :-S', err);
+    });
+}
+function getTokenPrice() {
+  checkTokenStatus();
+  return getResource('/data/wow/token/index', (data) => {
+    let { price } = data;
+    price = price
+      .toString()
+      .slice(0, -4)
+      .replace(/\d{3}(?=(\d{3}))/g, '$&,');
+    return `The price of a token on EU servers is: ***${price}*** gold`;
+  });
+}
+
+function getPlayerInfo(player) {
+  const realm = player.substring(player.indexOf('-') + 1);
+  const character = player.substring(0, player.indexOf('-'));
+
+  return getResource(`/wow/character/${realm}/${character}`, (data) => {
+    console.log(data);
+    if (data === 404) {
+      return 'Could not find character.';
+    }
+    const {
+      name, race, gender, level, thumbnail,
+    } = data;
+    const image = `http://render-eu.worldofwarcraft.com/character/${thumbnail}`;
+
+    const charRace = races.find(r => r.id === race);
+
+    const charClass = classes.find(c => c.id === data.class);
+
+    return new RichEmbed({
+      title: `${name}-${data.realm}`,
+      description: `${level} ${gender === 0 ? 'Male' : 'Female'} ${charRace.name} ${charClass.name}`,
+      color: parseInt(charClass.color, 16),
+    }).setThumbnail(image);
+  });
+}
+
+function getRealmStatus(realm) {
+  return getResource('/wow/realm/status', (data) => {
+    const result = data.realms.find(r => r.name.toLowerCase() === realm.toLowerCase());
+    console.log(result);
+    let status;
+    let color;
+    if (result.status) {
+      status = 'online';
+      color = 0x1b9601;
+    } else {
+      status = 'offline';
+      color = 0xff0000;
+    }
+    return new RichEmbed()
+      .setColor(color)
+      .setTitle(`Realm Status - ${result.name}`)
+      .addField('STATUS: ', status)
+      .addField('POPULATION: ', result.population)
+      .addField('QUEUE:', result.queue ? 'Has a queue' : 'No queue');
+  });
+}
+module.exports = {
+  getTokenPrice,
+  getBnetAccessToken,
+  getPlayerInfo,
+  getRealmStatus,
+};

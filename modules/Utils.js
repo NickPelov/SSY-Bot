@@ -2,8 +2,12 @@ function getCommandFromMessage(msg) {
   const { content } = msg;
   let endOfCommand = content.indexOf(' ') + 1;
   if (endOfCommand < 1) endOfCommand = content.length;
-  const command = content.slice(1, endOfCommand);
-  return command;
+  const args = msg.content.trim().split(/ +/g);
+  const command = args
+    .shift()
+    .toLowerCase()
+    .slice(1);
+  return { command, args };
 }
 
 function getGuildMemberFromUser(user) {
@@ -35,6 +39,23 @@ function kickUserFromGuild(msg, user, reason) {
     }
   }
 }
+
+// function createRichEmbed(options) {
+//   const {
+//     title, description, color, image, thumbnail, link,
+//   } = options;
+
+//   const embed = new RichEmbed()
+//     .setTitle(title)
+//     .setColor(color || 0xff0000)
+//     .setImage(image)
+//     .setThumbnail(thumbnail)
+//     .setTimestamp()
+//     .addField('Read More:', link)
+//     .setDescription(description);
+//   return embed;
+// }
+
 module.exports = {
   getCommandFromMessage,
   getGuildMemberFromUser,

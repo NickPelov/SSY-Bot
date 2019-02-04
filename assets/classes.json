@@ -1,0 +1,88 @@
+{
+  "classes": [
+    {
+      "id": 1,
+      "mask": 1,
+      "powerType": "rage",
+      "name": "Warrior",
+      "color": "0xC79C6E"
+    },
+    {
+      "id": 2,
+      "mask": 2,
+      "powerType": "mana",
+      "name": "Paladin",
+      "color": "0xF58CBA"
+    },
+    {
+      "id": 3,
+      "mask": 4,
+      "powerType": "focus",
+      "name": "Hunter",
+      "color": "0xABD473"
+    },
+    {
+      "id": 4,
+      "mask": 8,
+      "powerType": "energy",
+      "name": "Rogue",
+      "color": "0xFFF569"
+    },
+    {
+      "id": 5,
+      "mask": 16,
+      "powerType": "mana",
+      "name": "Priest",
+      "color": "0xFFFFFF"
+    },
+    {
+      "id": 6,
+      "mask": 32,
+      "powerType": "runic-power",
+      "name": "Death Knight",
+      "color": "0xC41F3B"
+    },
+    {
+      "id": 7,
+      "mask": 64,
+      "powerType": "mana",
+      "name": "Shaman",
+      "color": "0x0070DE"
+    },
+    {
+      "id": 8,
+      "mask": 128,
+      "powerType": "mana",
+      "name": "Mage",
+      "color": "0x40C7EB"
+    },
+    {
+      "id": 9,
+      "mask": 256,
+      "powerType": "mana",
+      "name": "Warlock",
+      "color": "0x8787ED"
+    },
+    {
+      "id": 10,
+      "mask": 512,
+      "powerType": "energy",
+      "name": "Monk",
+      "color": "0x00FF96"
+    },
+    {
+      "id": 11,
+      "mask": 1024,
+      "powerType": "mana",
+      "name": "Druid",
+      "color": "0xFF7D0A"
+    },
+    {
+      "id": 12,
+      "mask": 2048,
+      "powerType": "fury",
+      "name": "Demon Hunter",
+      "color": "0xA330C9"
+    }
+  ]
+}
