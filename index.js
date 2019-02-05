@@ -6,6 +6,7 @@ const { showGMMessage } = require('./modules/FunFunctions');
 const {
   getTokenPrice, getPlayerInfo, getRealmStatus, getBnetAccessToken,
 } = require('./modules/Bnet');
+const { getHelpEmbed } = require('./modules/Help');
 
 const client = new Discord.Client();
 
@@ -38,6 +39,11 @@ const handleMessage = async (msg) => {
     } else {
       msg.channel.send('Please provide a realm name: /realm Sylvanas');
     }
+  } else if (command === 'help') {
+    const help = getHelpEmbed(client.user.avatarURL);
+    msg.author.send(help);
+  } else if (command === 'bnet') {
+    msg.channel.send('Thanks!');
   }
 };
 

@@ -69,6 +69,7 @@ function getResource(url, callback) {
       console.error('Fetch Error :-S', err);
     });
 }
+
 function getTokenPrice() {
   checkTokenStatus();
   return getResource('/data/wow/token/index', (data) => {
@@ -126,6 +127,7 @@ function getRealmStatus(realm) {
       .addField('QUEUE:', result.queue ? 'Has a queue' : 'No queue');
   });
 }
+
 module.exports = {
   getTokenPrice,
   getBnetAccessToken,
