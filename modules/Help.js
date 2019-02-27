@@ -36,6 +36,18 @@ function getHelpEmbed(avatar) {
         name: `\` ${prefix}help\``,
         value: 'Sends this message',
       },
+      {
+        name: `\` ${prefix}purge <X>\``,
+        value: '(**Officer Only**) Deletes the last X messages from the channel you send it to.',
+      },
+      {
+        name: `\` ${prefix}load-logs <warcraft logs link>\``,
+        value: '(**Officer Only**) Load a url as the current log you want to get advice on.',
+      },
+      {
+        name: `\` ${prefix}advice\``,
+        value: '(**Officer Only**) Send personalized advice to each member of the raid.',
+      },
     ],
   }).setThumbnail(avatar);
   return embed;

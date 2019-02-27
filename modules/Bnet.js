@@ -37,8 +37,8 @@ async function getBnetAccessToken() {
         /data/wow/power-type/{powerTypeId}
         /data/wow/mythic-keystone/index
 */
-function constructURL(endPoint) {
-  return `https://eu.api.blizzard.com${endPoint}?namespace=dynamic-eu&locale=en_GB&access_token=${accessToken.token.access_token}`;
+function constructURL(endPoint, parameters) {
+  return `https://eu.api.blizzard.com${endPoint}${parameters || '?'}namespace=dynamic-eu&locale=en_GB&access_token=${accessToken.token.access_token}`;
 }
 
 /*
@@ -55,11 +55,11 @@ async function checkTokenStatus() {
   }
 }
 
-function getResource(url, callback) {
-  return fetch(constructURL(url))
+function getResource(url, parameters, callback) {
+  return fetch(constructURL(url, parameters))
     .then((response) => {
       if (response.status !== 200) {
-        console.error(`Looks like there was a problem. Status Code: ${response.status} & ${response.statusText}`);
+        console.error(`Bnet:Looks like there was a problem. Status Code: ${response.status} & ${response.statusText}`);
         return response.status;
       }
       return response.json();
@@ -68,6 +68,19 @@ function getResource(url, callback) {
     .catch((err) => {
       console.error('Fetch Error :-S', err);
     });
+}
+
+function parseCharacter(player) {
+  let realm;
+  let character;
+  if (player.indexOf('-') < 0) {
+    realm = 'Sylvanas';
+    character = player.substring(0, player.length);
+  } else {
+    realm = player.indexOf('-') < 0 ? 'Sylvanas' : player.substring(player.indexOf('-') + 1);
+    character = player.substring(0, player.indexOf('-'));
+  }
+  return { realm, character };
 }
 
 function getTokenPrice() {
@@ -82,27 +95,83 @@ function getTokenPrice() {
   });
 }
 
-function getPlayerInfo(player) {
-  const realm = player.substring(player.indexOf('-') + 1);
-  const character = player.substring(0, player.indexOf('-'));
-
-  return getResource(`/wow/character/${realm}/${character}`, (data) => {
+function getPlayerProgress(player) {
+  const { realm, character } = parseCharacter(player);
+  const relevantRaids = []; // Requires 0 or 2 entries, anything else will throw an error
+  return getResource(`/wow/character/${realm}/${character}`, '?fields=progression&', (data) => {
     if (data === 404) {
       return 'Could not find character.';
     }
+
+    const { progression } = data;
+    const { raids } = progression;
+    const result = [];
+    if (relevantRaids[0]) {
+      relevantRaids.forEach((relevant) => {
+        result.push(raids.find(raid => raid.name === relevant));
+      });
+    } else {
+      result.push(raids[raids.length - 1]);
+      result.push(raids[raids.length - 2]);
+    }
+    return result;
+  });
+}
+
+function getPlayerInfo(player) {
+  const { realm, character } = parseCharacter(player);
+  return getResource(`/wow/character/${realm}/${character}`, '?fields=items&', async (data) => {
+    if (data === 404) {
+      return 'Could not find character.';
+    }
+
     const {
-      name, race, gender, level, thumbnail,
+      name, race, gender, level, thumbnail, items,
     } = data;
     const image = `http://render-eu.worldofwarcraft.com/character/${thumbnail}`;
 
     const charRace = races.find(r => r.id === race);
 
     const charClass = classes.find(c => c.id === data.class);
-
+    const progression = await getPlayerProgress(player);
     return new RichEmbed({
-      title: `${name}-${data.realm}`,
+      title: `***${name}-${data.realm}***`,
       description: `${level} ${gender === 0 ? 'Male' : 'Female'} ${charRace.name} ${charClass.name}`,
       color: parseInt(charClass.color, 16),
+      fields: [
+        {
+          name: 'Equipped ilvl:',
+          value: items.averageItemLevelEquipped,
+        },
+        {
+          name: 'Top gear ilvl:',
+          value: items.averageItemLevel,
+        },
+        {
+          name: `Progress in ${progression[0].name}`,
+          value: `Mythic: ${progression[0].bosses.filter(boss => boss.mythicKills !== 0).length}/${progression[0].bosses.length}\nHeroic: ${
+            progression[0].bosses.filter(boss => boss.heroicKills !== 0).length
+          }/${progression[0].bosses.length} `,
+        },
+        {
+          name: `Progress in ${progression[1].name}`,
+          value: `Mythic: ${progression[1].bosses.filter(boss => boss.mythicKills !== 0).length}/${progression[1].bosses.length}\nHeroic: ${
+            progression[1].bosses.filter(boss => boss.heroicKills !== 0).length
+          }/${progression[1].bosses.length} `,
+        },
+        {
+          name: 'Raider.IO',
+          value: `https://raider.io/characters/eu/${realm}/${character} `,
+        },
+        {
+          name: 'Warcraft Logs:',
+          value: `https://www.warcraftlogs.com/character/eu/${realm}/${character} `,
+        },
+        {
+          name: 'Armory',
+          value: `https://www.worldofwarcraft.com/en-gb/character/${realm}/${character} `,
+        },
+      ],
     }).setThumbnail(image);
   });
 }
