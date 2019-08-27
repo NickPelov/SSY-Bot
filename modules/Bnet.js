@@ -16,6 +16,7 @@ const credentials = {
 };
 
 // Initialize the OAuth2 Library
+// eslint-disable-next-line
 const oauth2 = require('simple-oauth2').create(credentials);
 
 let accessToken;
@@ -85,7 +86,7 @@ function parseCharacter(player) {
 
 function getTokenPrice() {
   checkTokenStatus();
-  return getResource('/data/wow/token/index', (data) => {
+  return getResource('/data/wow/token/index', '', (data) => {
     let { price } = data;
     price = price
       .toString()

@@ -33,6 +33,23 @@ function getHelpEmbed(avatar) {
         value: 'Only for lame people!',
       },
       {
+        name: `\` ${prefix}start-vote "Your question goes here" option1 option2 etc.\``,
+        value:
+          'Starts a 1 min vote for the question you specify with the options you specify. Pay attention that the question must be warpped in "" ',
+      },
+      {
+        name: `\` ${prefix}give-meth-to-addicts <number>\``,
+        value: '(***Games Champion/Officer Only***) Starts a gambling session with a max roll of <number>. Use /join to Join and /leave to Leave',
+      },
+      {
+        name: `\` ${prefix}roll\``,
+        value: 'Rolls a random number between 1-<number>',
+      },
+      {
+        name: `\` ${prefix}dad\``,
+        value: 'Create a special message for Josh!',
+      },
+      {
         name: `\` ${prefix}help\``,
         value: 'Sends this message',
       },
@@ -47,6 +64,10 @@ function getHelpEmbed(avatar) {
       {
         name: `\` ${prefix}advice\``,
         value: '(**Officer Only**) Send personalized advice to each member of the raid.',
+      },
+      {
+        name: `\` ${prefix}whoStoleMyBike\``,
+        value: 'For Sreky!',
       },
     ],
   }).setThumbnail(avatar);
