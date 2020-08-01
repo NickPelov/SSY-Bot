@@ -1,5 +1,4 @@
 const fetch = require('node-fetch');
-const parser = require('xml2json');
 const { RichEmbed } = require('discord.js');
 
 const logoMMO = 'https://static.mmo-champion.com/images/tranquilizing/logo.png';

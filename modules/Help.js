@@ -1,12 +1,13 @@
 // Implement /help functionality
-const { RichEmbed } = require('discord.js');
+const { MessageEmbed } = require('discord.js');
 const { prefix } = require('../config.json');
 
 function getHelpEmbed(avatar) {
-  const embed = new RichEmbed({
+  const embed = new MessageEmbed({
     title: '```Information```',
     description: 'Help information for the Stop Silencing Yourself Bot\n\n',
     color: 10534650,
+    type: 'rich',
     fields: [
       {
         name: `\` ${prefix}latest-news \``,
