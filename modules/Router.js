@@ -1,16 +1,25 @@
 const { prefix } = require('../config.json');
-const { getLatestNews } = require('./News');
 const { showGMMessage } = require('./FunFunctions');
-const { getTokenPrice } = require('./Bnet');
 const { getHelpEmbed } = require('./Help');
 const { sendRaidStartMessage } = require('./Raid');
 const { startModel, castVote } = require('./Voting');
 const { getCommandFromMessage } = require('./Utils');
+const { addPoints, checkBalance } = require('./GoodBoyPoints');
+const { checkJoinedDate } = require('./Members');
 
 async function Router(client, msg) {
   const { channel, content } = msg;
 
   if (!msg.guild) return;
+
+  if (msg.member.user.bot) return;
+
+  if (msg.channel.id === '738158351833366620' && !content.startsWith(prefix)) {
+    const { args } = getCommandFromMessage(msg);
+
+    // 561319019651661836  738158351833366620
+    addPoints(msg, args);
+  }
 
   if (!content.startsWith(prefix)) return; // Not a message for our BOT, ignore it
 
@@ -21,20 +30,10 @@ async function Router(client, msg) {
   const { command, args } = getCommandFromMessage(msg);
 
   switch (command) {
-    case 'latest-news': {
-      const link = await getLatestNews();
-      channel.send(link);
-      break;
-    }
     case 'awesome':
     case 'lame':
       showGMMessage(msg, command);
       break;
-    case 'token': {
-      const price = await getTokenPrice();
-      channel.send(price);
-      break;
-    }
     case 'help': {
       const help = getHelpEmbed(client.user.avatarURL);
       msg.author.send(help);
@@ -56,15 +55,15 @@ async function Router(client, msg) {
     case 'start-vote':
       startModel(msg, args);
       break;
-    case 'start-vote':
-      startModel(msg, args);
-      break;
-    case 'balance':
-      startModel(msg, args);
-      break;
     case 'vote':
       if (!args[0]) return;
       castVote(msg, args[0]);
+      break;
+    case 'balance':
+      checkBalance(msg);
+      break;
+    case 'joined':
+      checkJoinedDate(msg);
       break;
     default:
       channel.send(`${command} not found.`);

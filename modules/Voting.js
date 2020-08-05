@@ -1,6 +1,7 @@
-const { RichEmbed } = require('discord.js');
+const { MessageEmbed } = require('discord.js');
 
 const votes = [];
+let inProgress = false;
 
 function parseData(args) {
   const result = {};
@@ -25,7 +26,7 @@ function parseData(args) {
 
 function countVotes(options) {
   const results = {};
-  const embed = new RichEmbed();
+  const embed = new MessageEmbed();
   options.forEach((option, index) => {
     if (!results[option]) results[option] = 0;
     votes.forEach((vote) => {
@@ -40,11 +41,11 @@ function countVotes(options) {
 
 function startModel(msg, args) {
   const { author, channel } = msg;
-  let inProgress = false;
+
   if (!inProgress) {
     const result = parseData(args);
     if (!result.error) {
-      const embed = new RichEmbed();
+      const embed = new MessageEmbed();
       result.options.forEach((option, index) => embed.addField(`${index + 1}. ${option}`, `Vote with /vote ${index + 1}`)); // or /vote ${option}
       embed.setDescription('====================================');
       embed.setTitle(`Vote started: ${result.body}`);
@@ -66,8 +67,12 @@ function startModel(msg, args) {
 }
 
 function castVote(msg, vote) {
-  votes.push(vote);
-  console.log(vote);
+  if (!inProgress) {
+    msg.reply('A vote is not currently in progress.');
+  } else {
+    votes.push(vote);
+    msg.reply(`Registered vote for option: ${vote}`);
+  }
 }
 
 module.exports = {

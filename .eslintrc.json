@@ -3,6 +3,7 @@
   "rules": {
     "no-console": ["warn", { "allow": ["warn", "error"] }],
     "arrow-parens": ["error", "always"],
-    "max-len": ["error", { "code": 150 }]
+    "max-len": ["error", { "code": 150 }],
+    "no-restricted-globals": ["warn"]
   }
 }

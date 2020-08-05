@@ -1,6 +1,7 @@
 {
   "dependencies": {
     "discord.js": "^12.2.0",
+    "firebase-admin": "^9.0.0",
     "node-fetch": "^2.3.0",
     "numeral": "^2.0.6",
     "simple-oauth2": "^2.2.1",
@@ -19,7 +20,7 @@
   },
   "husky": {
     "hooks": {
-      "pre-commit": "yarn lint"
+      "pre-commit": "npm run lint"
     }
   }
 }

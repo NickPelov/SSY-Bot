@@ -1,7 +1,7 @@
 const fs = require('fs');
 const fetch = require('node-fetch');
 const { RichEmbed } = require('discord.js');
-const { millisToMinutesAndSeconds } = require('./Utils');
+const { millisToMinutesAndSeconds } = require('../modules/Utils');
 
 let currentReport = 'J4QP3caWjMw1dpVF';
 let currentFight = 0;
@@ -18,7 +18,7 @@ function associateCharacterWithMember(msg, character, discordUser) {
   const user = discordUser || msg.author;
 
   const members = msg.guild.members.clone();
-  const member = members.find(item => item.user.username.indexOf(user.username) > -1);
+  const member = members.find((item) => item.user.username.indexOf(user.username) > -1);
   playersRecord.set(character, member);
   msg.reply(`${member} was associated with character: ${character}`);
 }
@@ -32,7 +32,7 @@ function getResource(url, callback) {
       }
       return response.json();
     })
-    .then(data => callback(data))
+    .then((data) => callback(data))
     .catch((err) => {
       console.error('Fetch Error :-S', err);
     });
@@ -60,7 +60,7 @@ function getFight(fight) {
 function getAbilityID(issue) {
   const { id, group } = issue;
   const { insightConfigs } = jsonData;
-  const insightConfig = insightConfigs.find(item => item.group === group && item.id === id);
+  const insightConfig = insightConfigs.find((item) => item.group === group && item.id === id);
 
   const { titleWhenNoEvents, tip } = insightConfig;
   const stringToParse = titleWhenNoEvents || tip;
@@ -103,7 +103,7 @@ function getStatsPerPlayer() {
         const playerIndexInInsight = insight.details.indexOf(raider.name);
         const endOfNote = insight.details.indexOf(',', playerIndexInInsight);
         if (playerIndexInInsight > -1 && insight.major) {
-          const insightConfig = insightConfigs.find(item => item.group === insight.group && item.id === insight.id);
+          const insightConfig = insightConfigs.find((item) => item.group === insight.group && item.id === insight.id);
           const note = insight.details.slice(playerIndexInInsight, endOfNote);
           player.issues.push({
             id: insight.id,
@@ -131,9 +131,10 @@ function checkRaiderExistsInGuild(msg, advice) {
     raiders.set(
       key,
       members.find(
-        item => (item.nickname && item.nickname.toLowerCase().indexOf(name.toLowerCase()) > -1)
-          || item.user.username.toLowerCase().indexOf(name.toLowerCase()) > -1,
-      ),
+        (item) =>
+          (item.nickname && item.nickname.toLowerCase().indexOf(name.toLowerCase()) > -1) ||
+          item.user.username.toLowerCase().indexOf(name.toLowerCase()) > -1
+      )
     );
   });
   raiders.forEach((raider, key) => {

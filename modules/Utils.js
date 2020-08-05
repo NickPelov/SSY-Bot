@@ -1,12 +1,15 @@
+let client;
+
+const initUtilGlobals = (clnt) => {
+  client = clnt;
+};
+
 function getCommandFromMessage(msg) {
   const { content } = msg;
   let endOfCommand = content.indexOf(' ') + 1;
   if (endOfCommand < 1) endOfCommand = content.length;
   const args = msg.content.trim().split(/ +/g);
-  const command = args
-    .shift()
-    .toLowerCase()
-    .slice(1);
+  const command = args.shift().toLowerCase().slice(1);
   return { command, args };
 }
 
@@ -61,21 +64,13 @@ function debounce(func, wait, immediate) {
     if (callNow) func.apply(context, args);
   };
 }
-// function createRichEmbed(options) {
-//   const {
-//     title, description, color, image, thumbnail, link,
-//   } = options;
 
-//   const embed = new RichEmbed()
-//     .setTitle(title)
-//     .setColor(color || 0xff0000)
-//     .setImage(image)
-//     .setThumbnail(thumbnail)
-//     .setTimestamp()
-//     .addField('Read More:', link)
-//     .setDescription(description);
-//   return embed;
-// }
+const getEmoji = (name) => {
+  if (!client) return undefined;
+
+  const emoji = client.emojis.cache.find((e) => e.name === name);
+  return emoji;
+};
 
 module.exports = {
   getCommandFromMessage,
@@ -83,4 +78,6 @@ module.exports = {
   kickUserFromGuild,
   debounce,
   millisToMinutesAndSeconds,
+  getEmoji,
+  initUtilGlobals,
 };
