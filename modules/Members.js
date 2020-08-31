@@ -1,13 +1,32 @@
+const admin = require('firebase-admin');
+
 const checkJoinedDate = (msg) => {
-  const { joinedTimestamp } = msg.member;
+  let joinedAt = msg.member.joinedTimestamp;
 
-  const today = Date.now();
+  const userId = msg.member.id;
 
-  const todayString = new Date(joinedTimestamp).toUTCString();
+  const db = admin.firestore();
 
-  const numberOfDays = Math.round((today - joinedTimestamp) / (1000 * 60 * 60 * 24));
+  db.collection('users')
+    .doc(userId)
+    .get()
+    .then((userDoc) => {
+      if (userDoc.exists) {
+        const fbJoined = userDoc.data().joinedAtTimestamp;
 
-  msg.reply(`you have been a member of this server since: ${todayString}. Which is ${numberOfDays} days!`);
+        if (fbJoined < joinedAt) {
+          joinedAt = fbJoined;
+        }
+      }
+
+      const today = Date.now();
+
+      const todayString = new Date(joinedAt).toUTCString();
+
+      const numberOfDays = Math.round((today - joinedAt) / (1000 * 60 * 60 * 24));
+
+      msg.reply(`you have been a member of this server since: ${todayString}. Which is ${numberOfDays} days!`);
+    });
 };
 
 module.exports = {

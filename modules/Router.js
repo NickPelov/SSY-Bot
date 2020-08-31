@@ -7,14 +7,14 @@ const { getCommandFromMessage } = require('./Utils');
 const { addPoints, checkBalance } = require('./GoodBoyPoints');
 const { checkJoinedDate } = require('./Members');
 
-async function Router(client, msg) {
+const Router = (client, msg) => {
   const { channel, content } = msg;
 
   if (!msg.guild) return;
 
-  if (msg.member.user.bot) return;
+  if (!msg.member || msg.member.user.bot) return;
 
-  if (msg.channel.id === '738158351833366620' && !content.startsWith(prefix)) {
+  if (msg.channel.id === '738158351833366620') {
     const { args } = getCommandFromMessage(msg);
 
     // 561319019651661836  738158351833366620
@@ -69,6 +69,6 @@ async function Router(client, msg) {
       channel.send(`${command} not found.`);
       break;
   }
-}
+};
 
 module.exports = Router;
